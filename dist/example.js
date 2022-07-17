@@ -1717,13 +1717,6 @@
   var state = function(dict) {
     return dict.state;
   };
-  var put = function(dictMonadState) {
-    return function(s) {
-      return state(dictMonadState)(function(v) {
-        return new Tuple(unit, s);
-      });
-    };
-  };
   var modify_2 = function(dictMonadState) {
     return function(f) {
       return state(dictMonadState)(function(s) {
@@ -6083,17 +6076,17 @@
     return Finalize2;
   }();
   var Receive = /* @__PURE__ */ function() {
-    function Receive4(value0, value1) {
+    function Receive3(value0, value1) {
       this.value0 = value0;
       this.value1 = value1;
     }
     ;
-    Receive4.create = function(value0) {
+    Receive3.create = function(value0) {
       return function(value1) {
-        return new Receive4(value0, value1);
+        return new Receive3(value0, value1);
       };
     };
-    return Receive4;
+    return Receive3;
   }();
   var Action2 = /* @__PURE__ */ function() {
     function Action3(value0, value1) {
@@ -7379,14 +7372,14 @@
     return Initialize3;
   }();
   var Receive2 = /* @__PURE__ */ function() {
-    function Receive4(value0) {
+    function Receive3(value0) {
       this.value0 = value0;
     }
     ;
-    Receive4.create = function(value0) {
-      return new Receive4(value0);
+    Receive3.create = function(value0) {
+      return new Receive3(value0);
     };
-    return Receive4;
+    return Receive3;
   }();
   var Update = /* @__PURE__ */ function() {
     function Update2(value0) {
@@ -7538,16 +7531,6 @@
   };
 
   // output/Home/index.js
-  var Receive3 = /* @__PURE__ */ function() {
-    function Receive4(value0) {
-      this.value0 = value0;
-    }
-    ;
-    Receive4.create = function(value0) {
-      return new Receive4(value0);
-    };
-    return Receive4;
-  }();
   var component = function(dictMonadStore) {
     return function(dictMonadEffect) {
       var render = function(v) {
@@ -7556,21 +7539,10 @@
       var initialState = function(v) {
         return v.context;
       };
-      var handleAction = function(v) {
-        return put(monadStateHalogenM)(v.value0.context);
-      };
       return connect(dictMonadEffect)(dictMonadStore)(selectAll)(mkComponent({
         initialState,
         render,
-        "eval": mkEval({
-          handleAction,
-          handleQuery: defaultEval.handleQuery,
-          receive: function($11) {
-            return Just.create(Receive3.create($11));
-          },
-          initialize: defaultEval.initialize,
-          finalize: defaultEval.finalize
-        })
+        "eval": mkEval(defaultEval)
       }));
     };
   };

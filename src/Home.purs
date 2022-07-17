@@ -19,7 +19,6 @@ import Type.Prelude (Proxy(..))
 
 type Input = Unit
 
-data Action = Receive (Connected MS.Store Input)
 type State = {x :: Int}
 
 component
@@ -31,11 +30,9 @@ component = connect selectAll $
   H.mkComponent
     { initialState
     , render
-    , eval: H.mkEval $ H.defaultEval { handleAction = handleAction, receive = Just <<< Receive }
+    , eval: H.mkEval $ H.defaultEval
     }
   where
   initialState {context} = context
-  handleAction = case _ of
-    Receive {context} -> H.put context
   render _ =
     HH.div_ [ HH.text "Logged in. Home component" ]
