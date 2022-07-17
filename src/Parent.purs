@@ -15,24 +15,18 @@ import Halogen.Query.HalogenM (SubscriptionId)
 import Halogen.Store.Monad (runStoreT)
 import Halogen.Subscription as HS
 import LoggedIn as LoggedIn
-import LoggedOff as LoggedOff
 import MyStore as MS
 import Type.Proxy (Proxy(..))
 
-type Slots =
-  ( loggedOff :: H.Slot Query LoggedOff.Output Unit
-  , loggedIn :: H.Slot Query Void Unit
-  )
+type Slots = ( loggedIn :: H.Slot Query Void Unit)
 
 _loggedIn = Proxy :: Proxy "loggedIn"
-_loggedOff = Proxy :: Proxy "loggedOff"
 
 type Query :: ∀ k. k -> Type
 type Query = Const Void
 
 type State =
   { loggedInComponent :: Maybe (H.Component Query Unit Void Aff)
-  , logoffSubId :: Maybe SubscriptionId
   }
 
 data Action = Login | Logoff
@@ -45,26 +39,23 @@ component =
     , eval: H.mkEval $ H.defaultEval { handleAction = handleAction }
     }
   where
-  initialState _ = { loggedInComponent: Nothing, logoffSubId: Nothing }
+  initialState _ = { loggedInComponent: Nothing }
 
   render { loggedInComponent } =
     case loggedInComponent of
       Nothing ->
         HH.div [ HE.onClick $ const Login ] [ HH.text "Logged off. Tap to log in."]
-      Just c -> HH.slot_ _loggedIn unit c unit
+      Just c ->
+        HH.div
+          [ HE.onClick $ const Logoff ]
+          [ HH.text "Logged in. Tap to log off."
+          , HH.slot_ _loggedIn unit c unit
+          ]
 
   handleAction = case _ of
     Login -> do
-      { emitter, listener } <- H.liftEffect HS.create
-      subId <- H.subscribe emitter
-
-      let doLogoff = HS.notify listener Logoff
-
       loggedInComponent <- H.liftAff
-        $ runStoreT (MS.initialStore doLogoff) MS.reduce LoggedIn.component
-      H.modify_ _ { loggedInComponent = Just loggedInComponent, logoffSubId = Just subId }
+        $ runStoreT (MS.initialStore 1) MS.reduce LoggedIn.component
+      H.modify_ _ { loggedInComponent = Just loggedInComponent }
     Logoff -> do
-      H.liftEffect $ log "Logging off"
-      {logoffSubId} <- H.get
-      maybe (pure unit) H.unsubscribe logoffSubId
       H.modify_ _ { loggedInComponent = Nothing }

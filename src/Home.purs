@@ -19,9 +19,8 @@ import Type.Prelude (Proxy(..))
 
 type Input = Unit
 
-data Action = Logoff | Receive (Connected MS.Store Input)
-
-type State = {logoff :: Effect Unit}
+data Action = Receive (Connected MS.Store Input)
+type State = {x :: Int}
 
 component
   :: forall q o m
@@ -37,9 +36,6 @@ component = connect selectAll $
   where
   initialState {context} = context
   handleAction = case _ of
-    Logoff -> do
-      {logoff} <- H.get
-      H.liftEffect logoff
     Receive {context} -> H.put context
   render _ =
-    HH.div [ HE.onClick $ const Logoff ] [ HH.text "Grandkid component: tap to logoff" ]
+    HH.div_ [ HH.text "Logged in. Home component" ]

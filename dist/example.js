@@ -1738,11 +1738,6 @@
       });
     };
   };
-  var get = function(dictMonadState) {
-    return state(dictMonadState)(function(s) {
-      return new Tuple(s, s);
-    });
-  };
 
   // output/Control.Monad.Trans.Class/index.js
   var lift = function(dict) {
@@ -3669,11 +3664,6 @@
   };
 
   // output/Effect.Console/foreign.js
-  var log = function(s) {
-    return function() {
-      console.log(s);
-    };
-  };
   var warn = function(s) {
     return function() {
       console.warn(s);
@@ -5940,9 +5930,6 @@
   var HalogenM = function(x) {
     return x;
   };
-  var unsubscribe2 = function(sid) {
-    return liftF(new Unsubscribe(sid, unit));
-  };
   var subscribe2 = function(es) {
     return liftF(new Subscribe(function(v) {
       return es;
@@ -7236,14 +7223,6 @@
     };
   };
 
-  // output/Effect.Class.Console/index.js
-  var log3 = function(dictMonadEffect) {
-    var $33 = liftEffect(dictMonadEffect);
-    return function($34) {
-      return $33(log($34));
-    };
-  };
-
   // output/Web.UIEvent.MouseEvent.EventTypes/index.js
   var click2 = "click";
 
@@ -7559,13 +7538,6 @@
   };
 
   // output/Home/index.js
-  var Logoff = /* @__PURE__ */ function() {
-    function Logoff3() {
-    }
-    ;
-    Logoff3.value = new Logoff3();
-    return Logoff3;
-  }();
   var Receive3 = /* @__PURE__ */ function() {
     function Receive4(value0) {
       this.value0 = value0;
@@ -7579,23 +7551,13 @@
   var component = function(dictMonadStore) {
     return function(dictMonadEffect) {
       var render = function(v) {
-        return div2([onClick($$const(Logoff.value))])([text5("Grandkid component: tap to logoff")]);
+        return div_([text5("Logged in. Home component")]);
       };
       var initialState = function(v) {
         return v.context;
       };
       var handleAction = function(v) {
-        if (v instanceof Logoff) {
-          return bind(bindHalogenM)(get(monadStateHalogenM))(function(v1) {
-            return liftEffect(monadEffectHalogenM(dictMonadEffect))(v1.logoff);
-          });
-        }
-        ;
-        if (v instanceof Receive3) {
-          return put(monadStateHalogenM)(v.value0.context);
-        }
-        ;
-        throw new Error("Failed pattern match at Home (line 39, column 18 - line 43, column 39): " + [v.constructor.name]);
+        return put(monadStateHalogenM)(v.value0.context);
       };
       return connect(dictMonadEffect)(dictMonadStore)(selectAll)(mkComponent({
         initialState,
@@ -7603,8 +7565,8 @@
         "eval": mkEval({
           handleAction,
           handleQuery: defaultEval.handleQuery,
-          receive: function($14) {
-            return Just.create(Receive3.create($14));
+          receive: function($11) {
+            return Just.create(Receive3.create($11));
           },
           initialize: defaultEval.initialize,
           finalize: defaultEval.finalize
@@ -7620,11 +7582,11 @@
   var component2 = function(dictMonadStore) {
     return function(dictMonadEffect) {
       var render = function(v) {
-        return div_([slot_()({
+        return slot_()({
           reflectSymbol: function() {
             return "home";
           }
-        })(ordUnit)(_home)(unit)(component(dictMonadStore)(dictMonadEffect))(unit)]);
+        })(ordUnit)(_home)(unit)(component(dictMonadStore)(dictMonadEffect))(unit);
       };
       var initialState = function(v) {
         return unit;
@@ -7643,9 +7605,9 @@
       return s;
     };
   };
-  var initialStore = function(logoff) {
+  var initialStore = function(x) {
     return {
-      logoff
+      x
     };
   };
 
@@ -7657,12 +7619,12 @@
     Login2.value = new Login2();
     return Login2;
   }();
-  var Logoff2 = /* @__PURE__ */ function() {
-    function Logoff3() {
+  var Logoff = /* @__PURE__ */ function() {
+    function Logoff2() {
     }
     ;
-    Logoff3.value = new Logoff3();
-    return Logoff3;
+    Logoff2.value = new Logoff2();
+    return Logoff2;
   }();
   var _loggedIn = /* @__PURE__ */ function() {
     return $$Proxy.value;
@@ -7675,67 +7637,54 @@
         }
         ;
         if (v.loggedInComponent instanceof Just) {
-          return slot_()({
+          return div2([onClick($$const(Logoff.value))])([text5("Logged in. Tap to log off."), slot_()({
             reflectSymbol: function() {
               return "loggedIn";
             }
-          })(ordUnit)(_loggedIn)(unit)(v.loggedInComponent.value0)(unit);
+          })(ordUnit)(_loggedIn)(unit)(v.loggedInComponent.value0)(unit)]);
         }
         ;
-        throw new Error("Failed pattern match at Parent (line 54, column 5 - line 58, column 47): " + [v.loggedInComponent.constructor.name]);
+        throw new Error("Failed pattern match at Parent (line 45, column 5 - line 53, column 12): " + [v.loggedInComponent.constructor.name]);
       };
       var initialState = function(v) {
         return {
-          loggedInComponent: Nothing.value,
-          logoffSubId: Nothing.value
+          loggedInComponent: Nothing.value
         };
       };
       var handleAction = function(v) {
         if (v instanceof Login) {
-          return bind(bindHalogenM)(liftEffect(monadEffectHalogenM(dictMonadAff.MonadEffect0()))(create3))(function(v1) {
-            return bind(bindHalogenM)(subscribe2(v1.emitter))(function(subId) {
-              var doLogoff = notify(v1.listener)(Logoff2.value);
-              return bind(bindHalogenM)(liftAff(monadAffHalogenM(dictMonadAff))(runStoreT(dictMonadAff.MonadEffect0().Monad0())(initialStore(doLogoff))(reduce)(component2(monadStoreStoreT(dictMonadAff.MonadEffect0()))(monadEffectStoreT(dictMonadAff.MonadEffect0())))))(function(loggedInComponent) {
-                return modify_2(monadStateHalogenM)(function(v2) {
-                  var $16 = {};
-                  for (var $17 in v2) {
-                    if ({}.hasOwnProperty.call(v2, $17)) {
-                      $16[$17] = v2[$17];
-                    }
-                    ;
-                  }
-                  ;
-                  $16.loggedInComponent = new Just(loggedInComponent);
-                  $16.logoffSubId = new Just(subId);
-                  return $16;
-                });
-              });
+          return bind(bindHalogenM)(liftAff(monadAffHalogenM(dictMonadAff))(runStoreT(dictMonadAff.MonadEffect0().Monad0())(initialStore(1))(reduce)(component2(monadStoreStoreT(dictMonadAff.MonadEffect0()))(monadEffectStoreT(dictMonadAff.MonadEffect0())))))(function(loggedInComponent) {
+            return modify_2(monadStateHalogenM)(function(v1) {
+              var $13 = {};
+              for (var $14 in v1) {
+                if ({}.hasOwnProperty.call(v1, $14)) {
+                  $13[$14] = v1[$14];
+                }
+                ;
+              }
+              ;
+              $13.loggedInComponent = new Just(loggedInComponent);
+              return $13;
             });
           });
         }
         ;
-        if (v instanceof Logoff2) {
-          return discard(discardUnit)(bindHalogenM)(liftEffect(monadEffectHalogenM(dictMonadAff.MonadEffect0()))(log3(monadEffectEffect)("Logging off")))(function() {
-            return bind(bindHalogenM)(get(monadStateHalogenM))(function(v1) {
-              return discard(discardUnit)(bindHalogenM)(maybe(pure(applicativeHalogenM)(unit))(unsubscribe2)(v1.logoffSubId))(function() {
-                return modify_2(monadStateHalogenM)(function(v2) {
-                  var $22 = {};
-                  for (var $23 in v2) {
-                    if ({}.hasOwnProperty.call(v2, $23)) {
-                      $22[$23] = v2[$23];
-                    }
-                    ;
-                  }
-                  ;
-                  $22.loggedInComponent = Nothing.value;
-                  return $22;
-                });
-              });
-            });
+        if (v instanceof Logoff) {
+          return modify_2(monadStateHalogenM)(function(v1) {
+            var $16 = {};
+            for (var $17 in v1) {
+              if ({}.hasOwnProperty.call(v1, $17)) {
+                $16[$17] = v1[$17];
+              }
+              ;
+            }
+            ;
+            $16.loggedInComponent = Nothing.value;
+            return $16;
           });
         }
         ;
-        throw new Error("Failed pattern match at Parent (line 60, column 18 - line 74, column 50): " + [v.constructor.name]);
+        throw new Error("Failed pattern match at Parent (line 55, column 18 - line 61, column 50): " + [v.constructor.name]);
       };
       return mkComponent({
         initialState,
